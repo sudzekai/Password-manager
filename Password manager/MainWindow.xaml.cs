@@ -26,6 +26,7 @@ namespace Password_manager
         public MainWindow()
         {
             InitializeComponent();
+
             // Проверка на наличие пароля сделать нада
             //if (password == null)
             //{
@@ -38,15 +39,25 @@ namespace Password_manager
 
         }
 
+        //скрипт кнопки для входа, существует для красоты
         private void EnterButton_Click(object sender, RoutedEventArgs e) { CheckPass(); }
+
+        //функция кнопки, но через enter
         private void PasswordInput_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter)CheckPass(); }
 
+        //проверка на валидность пароля + обновление текстового документа
         public void CheckPass()
         {
             if (PasswordInput.Password == "123")
             {
                 LoginScreen.Visibility = Visibility.Hidden;
                 MainScreen.Visibility = Visibility.Visible;
+                string path = @"Data\Passwords.txt";
+                if (File.Exists(path))
+                {
+                    Passwords_Block.Text = File.ReadAllText(path);
+                }
+
             }
             else
             {
@@ -55,7 +66,7 @@ namespace Password_manager
             }
         }
 
-
+        // ввод паролей в главном окне
         private void Passwords_Box_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -65,6 +76,8 @@ namespace Password_manager
             }
         }
 
+        // ввод введенного текста в документ
+        // необходимо сделать шифрование паролей
         public void txt_Input(string text)
         {
             string path = @"Data\Passwords.txt";
@@ -73,6 +86,8 @@ namespace Password_manager
             txt_Output();
         }
 
+        // вывод текста из документа
+        // необходимо сделать дешифрование паролей
         public void txt_Output()
         {
             string path = @"Data\Passwords.txt";
