@@ -1,22 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.IO;
-using static System.Net.Mime.MediaTypeNames;
-using static System.Console;
-using System.Runtime.ExceptionServices;
-using System.Security.AccessControl;
+using System.Linq;
+using System.Windows;
+using System.Windows.Input;
 
 namespace Password_manager
 {
@@ -27,15 +13,25 @@ namespace Password_manager
         {
             InitializeComponent();
 
-            // Проверка на наличие пароля сделать нада
-            //if (password == null)
-            //{
-            //    PasswordScreen.Visibility = Visibility.Visible;
-            //}
-            //else 
-            //{
-            //    LoginScreen.Visibility = Visibility.Collapsed;
-            //}
+            string passwordpath = @"data/password.txt";
+            if (!File.Exists(passwordpath))
+            {
+                PasswordScreen.Visibility = Visibility.Visible;
+            }
+            if (File.Exists(passwordpath))
+            {
+                if (File.ReadAllText(passwordpath) == null || File.ReadAllText(passwordpath)=="")
+                {
+                    PasswordScreen.Visibility = Visibility.Visible;
+                }
+                else
+                {
+                    PasswordScreen.Visibility = Visibility.Hidden;
+                    LoginScreen.Visibility = Visibility.Visible;
+                }
+            }
+
+
 
         }
 
@@ -43,21 +39,21 @@ namespace Password_manager
         private void EnterButton_Click(object sender, RoutedEventArgs e) { CheckPass(); }
 
         //функция кнопки, но через enter
-        private void PasswordInput_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter)CheckPass(); }
+        private void PasswordInput_KeyDown(object sender, KeyEventArgs e) { if (e.Key == Key.Enter) CheckPass(); }
 
         //проверка на валидность пароля + обновление текстового документа
-        public void CheckPass()
+        private void CheckPass()
         {
-            if (PasswordInput.Password == "123")
+            string passwordpath = @"Data/password.txt";
+            if (PasswordInput.Password == Text_decryptor(File.ReadAllText(passwordpath)))
             {
                 LoginScreen.Visibility = Visibility.Hidden;
                 MainScreen.Visibility = Visibility.Visible;
                 string path = @"Data\Passwords.txt";
                 if (File.Exists(path))
                 {
-                    Passwords_Block.Text = File.ReadAllText(path);
+                    txt_Output();
                 }
-
             }
             else
             {
@@ -78,12 +74,22 @@ namespace Password_manager
 
         // ввод введенного текста в документ
         // необходимо сделать шифрование паролей
-        public void txt_Input(string text)
+        private void txt_Input(string text)
         {
             string path = @"Data\Passwords.txt";
-            string contents = text + "\n";
-            File.AppendAllText(path, contents);
-            txt_Output();
+
+            if (File.Exists(path))
+            {
+                string contents = Text_encryptor(text) + "\n";
+                File.AppendAllText(path, contents);
+                txt_Output();
+            }
+            if (!File.Exists(path))
+            {
+                string contents = Text_encryptor(text) + "\n";
+                File.WriteAllText(path, contents);
+                txt_Output();
+            }
         }
 
         // вывод текста из документа
@@ -92,22 +98,90 @@ namespace Password_manager
         {
             string path = @"Data\Passwords.txt";
             Passwords_Block.Text = null;
-            Passwords_Block.Text = File.ReadAllText(path);
+            if (File.Exists(path))
+            {   
+                for (int i = 0; i < File.ReadAllText(path).Split('\n').Count(); i++)
+                Passwords_Block.Text += Text_decryptor(File.ReadAllText(path).Split('\n')[i])+"\n";
+            }
         }
 
         // создание пароля
         private void gen_password()
         {
-            string path = @"C: temp/pass.txt";
-            string content = GenPasswordBlock.Text;
+            string path = @"Data/password.txt";
+            string content = Text_encryptor(GenPasswordBlock.Text);
             File.WriteAllText(path, content);
             MainScreen.Visibility = Visibility.Visible;
             PasswordScreen.Visibility = Visibility.Hidden;
         }
 
-        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+
+        // шифрование паролей
+
+        public string Text_decryptor(string text)
         {
-            gen_password();
+            string decrypted = "";
+
+            char[] textarr = text.ToCharArray();
+
+            for (int i = 0; i < textarr.Count(); i += 2)
+            {
+                for (int j = 0; j < arr.Length; j++)
+                {
+                    if (textarr[i] == arr[j])
+                    {
+                        for (int k = 0; k < arr.Length; k++)
+                        {
+                            if (textarr[i + 1] == arr[k])
+                            {
+                                decrypted += Convert.ToString(arr[k - j]);
+                                break;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+            }
+            return decrypted;
+        }
+        public string Text_encryptor(string text)
+        {
+
+            string encrypted = "";
+            char[] textarr = text.ToCharArray();
+
+            for (int i = 0; i < textarr.Count(); i++)
+            {
+
+                for (int j = 0; j < arr.Length; j++)
+                {
+
+                    int x = new Random().Next(j, arr.Count());
+                    if (arr[j] == textarr[i]) // PYTHON BLYAT
+                    {
+                        encrypted += Convert.ToString(arr[x - j]) + Convert.ToString(arr[x]);
+                        break;
+                    }
+                }
+            }
+            return encrypted;
+        }
+
+        private char[] arr = {'d', 'О', 'щ', '?', '<', 'ь', '6', 'Ъ', 'У', 'А', '-', '$', 'Л', 'n',
+        '8', 'k', 'о', ';', 'Q', 'p', 'х', 'К', 'y', 'r', 'ъ', '=', 'X', 'Ю', 'Й', 'Б',
+        'Э', 'у', 'x', 'C', 'U', 'Y', 'V', 'т', 'Ф', 'l', 'Т', 'Г', 'o', 'R', 'm', 'З',
+        'G', 'W', 'Н', 'g', 'Z', 'е', 'z', ']', 'F', 'A', 'Щ', '9', 'Я', 'н', 'ф', 'B',
+        'Д', 'р', 'Е', '&', 'q', 'э', 'д', '*', '5', 'ш', '}', 'М', '~', 'б', '2', 'я',
+        'E', '0', 'с', 'В', '_', ':', 'a', 'i', 'Р', 'Ч', 'Х', 'u', 'Ш', 'I', 'И', 'и',
+        'г', '>', '^', '{', 'Ц', 'ю', 'Ы', 'й', 'п', 'w', 't', '/', 'f', '@', 'c', 'ы',
+        'П', 'e', 'ё', 'S', 'b', '4', 'м', '1', 'L', ' ', 's', '[', 'а', 'в', '+', 'N',
+        '7', 'M', '3', 'H', 'ц', 'Ь', 'з', 'л', '`', '|', 'v', 'J', 'P', 'K', 'ч', 'ж',
+        'к', 'j', 'Ж', 'Ё', '%', '#', 'h', 'O', 'D', 'С', 'T', '.' };
+
+        private void GenPasswordBlock_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter) { gen_password(); }
         }
     }
 }

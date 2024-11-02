@@ -130,7 +130,7 @@
         <Border Name ="PasswordScreen" Style="{StaticResource Screen}" Visibility="Hidden">
             <StackPanel Style="{StaticResource LoginPanel}">
                 <TextBlock Text="Придумайте пароль" Style="{StaticResource GenTextStyle}"/>
-                <TextBox Name ="GenPasswordBlock"  Style="{StaticResource GenInputStyle}"/>
+                <TextBox Name ="GenPasswordBlock"  Style="{StaticResource GenInputStyle}" Keyboard.KeyDown="GenPasswordBlock_KeyDown"/>
             </StackPanel>
         </Border>
     </Grid>
