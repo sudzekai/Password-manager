@@ -83,6 +83,8 @@ namespace Password_manager
             string path = @"Data/password.txt";
             string content = Text_encryptor(GenPasswordBlock.Text);
             File.WriteAllText(path, content);
+            path = @"Data/Passwords.txt";
+            File.WriteAllText (path, "");
             MainScreen.Visibility = Visibility.Visible;
             PasswordScreen.Visibility = Visibility.Hidden;
         }
