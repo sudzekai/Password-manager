@@ -1,6 +1,8 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Input;
 
@@ -9,6 +11,8 @@ namespace Password_manager
     public partial class MainWindow : Window
     {
 
+
+        // проверка на наличие пароля
         public MainWindow()
         {
             InitializeComponent();
@@ -32,10 +36,9 @@ namespace Password_manager
             }
 
 
-
         }
 
-        //скрипт кнопки для входа, существует для красоты
+        //скрипт кнопки для входа
         private void EnterButton_Click(object sender, RoutedEventArgs e) { CheckPass(); }
 
         //функция кнопки, но через enter
@@ -62,38 +65,7 @@ namespace Password_manager
             }
         }
 
-        // ввод паролей в главном окне
-        private void Passwords_Box_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key == Key.Enter)
-            {
-                txt_Input(Passwords_Box.Text);
-                Passwords_Box.Text = "";
-            }
-        }
-
-        // ввод введенного текста в документ
-        // необходимо сделать шифрование паролей
-        private void txt_Input(string text)
-        {
-            string path = @"Data\Passwords.txt";
-
-            if (File.Exists(path))
-            {
-                string contents = Text_encryptor(text) + "\n";
-                File.AppendAllText(path, contents);
-                txt_Output();
-            }
-            if (!File.Exists(path))
-            {
-                string contents = Text_encryptor(text) + "\n";
-                File.WriteAllText(path, contents);
-                txt_Output();
-            }
-        }
-
-        // вывод текста из документа
-        // необходимо сделать дешифрование паролей
+        // вывод текста из документа с дешифровкой
         public void txt_Output()
         {
             string path = @"Data\Passwords.txt";
@@ -105,7 +77,7 @@ namespace Password_manager
             }
         }
 
-        // создание пароля
+        // создание пароля, его запись и шифрование
         private void gen_password()
         {
             string path = @"Data/password.txt";
@@ -116,7 +88,7 @@ namespace Password_manager
         }
 
 
-        // шифрование паролей
+        // методы шифрования и дешифровки
 
         public string Text_decryptor(string text)
         {
@@ -168,6 +140,8 @@ namespace Password_manager
             return encrypted;
         }
 
+        // ключ шифрования
+
         private char[] arr = {'d', 'О', 'щ', '?', '<', 'ь', '6', 'Ъ', 'У', 'А', '-', '$', 'Л', 'n',
         '8', 'k', 'о', ';', 'Q', 'p', 'х', 'К', 'y', 'r', 'ъ', '=', 'X', 'Ю', 'Й', 'Б',
         'Э', 'у', 'x', 'C', 'U', 'Y', 'V', 'т', 'Ф', 'l', 'Т', 'Г', 'o', 'R', 'm', 'З',
@@ -179,9 +153,61 @@ namespace Password_manager
         '7', 'M', '3', 'H', 'ц', 'Ь', 'з', 'л', '`', '|', 'v', 'J', 'P', 'K', 'ч', 'ж',
         'к', 'j', 'Ж', 'Ё', '%', '#', 'h', 'O', 'D', 'С', 'T', '.' };
 
+        // метод вызова функции создания пароля
         private void GenPasswordBlock_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter) { gen_password(); }
+        }
+
+        // обновленный метод ввода информации
+        private void Passwords_Block_KeyDown(object sender, KeyEventArgs e)
+        {
+            string path = @"Data/Passwords.txt";
+            File.WriteAllText(path, "");
+
+            if (e.Key == Key.F1)
+            {
+                
+                if (File.Exists(path))
+                {
+                    string content = "";
+                    string text = Passwords_Block.Text;
+
+                    for (int i = 0; i < Passwords_Block.LineCount; i++) {
+                        File.AppendAllText(path, Text_encryptor(Passwords_Block.GetLineText(i))+"\n");
+                        
+                    }
+
+                    for (int i = 0; i < File.ReadLines(path).Count(); i++)
+                    {
+                        content += Text_decryptor(File.ReadAllText(path).Split('\n')[i]) + "\n";
+
+                    }
+
+                    Passwords_Block.Text = content;
+                }
+
+            }
+        }
+
+        // проверка на наличие изменений
+
+        private void ErrorButton_Click(object sender, RoutedEventArgs e)
+        {
+            Error.Visibility = Visibility.Hidden;
+        }
+
+        private void Window_Closing_1(object sender, CancelEventArgs e)
+        {
+            string path = @"Data/Passwords.txt";
+            if (File.Exists(path))
+            {
+                if (File.ReadAllText(path) == null || File.ReadAllText(path).Length == 0 || File.ReadAllText(path) == "")
+                {
+                    e.Cancel = true;
+                    Error.Visibility = Visibility.Visible;
+                }
+            }
         }
     }
 }

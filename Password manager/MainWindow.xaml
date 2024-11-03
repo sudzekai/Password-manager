@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:Password_manager"
         mc:Ignorable="d"
         ResizeMode="NoResize"
-        Title="Password Manager 0.1a" Height="450" Width="800">
+        Closing="Window_Closing_1"
+        Title="Password Manager 1" Height="450" Width="800">
 
     <Window.Resources>
         <Style x:Key="Screen">
@@ -87,11 +88,11 @@
 
         <Style x:Key="PasswordsBlockStyle">
             <Style.Setters>
-                <Setter Property="TextBlock.Width" Value="750"/>
-                <Setter Property="TextBlock.Height" Value="10"/>
-                <Setter Property="TextBlock.Background" Value="#3d3d3d"/>
-                <Setter Property="TextBlock.Foreground" Value="#ffffff"/>
-                <Setter Property="TextBlock.Height" Value="331"/>
+                <Setter Property="TextBox.Width" Value="775"/>
+                <Setter Property="TextBox.Height" Value="10"/>
+                <Setter Property="TextBox.Background" Value="#1e1e1e"/>
+                <Setter Property="TextBox.Foreground" Value="#ffffff"/>
+                <Setter Property="TextBox.Height" Value="450"/>
 
             </Style.Setters>
         </Style>
@@ -107,7 +108,28 @@
             </Style.Setters>
         </Style>
 
-    </Window.Resources>
+
+        <Style x:Key="error_button">
+            <Style.Setters>
+                <Setter Property="Button.Background" Value="#3d3d3d"/>
+                <Setter Property="Button.Width" Value="30"/>
+                <Setter Property="Button.Margin" Value="5"/>
+                <Setter Property="Button.Padding" Value="0"/>
+                <Setter Property="Button.FontSize" Value="10"/>
+                <Setter Property="TextBlock.Foreground" Value="white"/>
+             </Style.Setters>
+        </Style>
+
+        <Style x:Key="error_text">
+            <Style.Setters>
+                <Setter Property="TextBlock.Foreground" Value="white"/>
+                <Setter Property="TextBlock.HorizontalAlignment" Value="Center"/>
+                <Setter Property="TextBlock.FontSize" Value="10"/>
+            </Style.Setters>
+        </Style>
+
+
+</Window.Resources>
 
     <Grid>
 
@@ -122,17 +144,28 @@
 
         <Border Name="MainScreen" Style="{StaticResource Screen}" Visibility="Hidden">
             <StackPanel Style="{StaticResource MainPanel}">
-                <TextBox x:Name ="Passwords_Box" Style="{StaticResource PasswordsInputStyle}" Keyboard.KeyDown="Passwords_Box_KeyDown"/>
-                <TextBlock x:Name="Passwords_Block" Style="{StaticResource PasswordsBlockStyle}" Height="306" />
+                <TextBox x:Name="Passwords_Block" Style="{StaticResource PasswordsBlockStyle}" Keyboard.KeyDown="Passwords_Block_KeyDown" TextWrapping="Wrap"
+  AcceptsReturn="True"
+  VerticalScrollBarVisibility="Auto" Height="434" Width="800"/>
             </StackPanel>
         </Border>
 
         <Border Name ="PasswordScreen" Style="{StaticResource Screen}" Visibility="Hidden">
             <StackPanel Style="{StaticResource LoginPanel}">
                 <TextBlock Text="Придумайте пароль" Style="{StaticResource GenTextStyle}"/>
-                <TextBox Name ="GenPasswordBlock"  Style="{StaticResource GenInputStyle}" Keyboard.KeyDown="GenPasswordBlock_KeyDown"/>
+                <TextBox Name ="GenPasswordBlock"  Style="{StaticResource GenInputStyle}" Keyboard.KeyDown="GenPasswordBlock_KeyDown" />
+
             </StackPanel>
         </Border>
+
+        <Border Name ="Error" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="100" Background="#3d3d3d" BorderBrush="Gainsboro" BorderThickness="2" Visibility="Hidden">
+            <StackPanel Style="{StaticResource LoginPanel}" >
+                <TextBlock Text="Вы не сохранили изменения! (F1)" Style="{StaticResource error_text}"/>
+                <Button Name ="ErrorButton" Click="ErrorButton_Click" Content="Ок" Style="{StaticResource error_button}"/>
+                
+            </StackPanel>
+        </Border>
+        
     </Grid>
 
 </Window>
