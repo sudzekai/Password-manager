@@ -158,14 +158,6 @@
             </StackPanel>
         </Border>
 
-        <Border Name ="Error" HorizontalAlignment="Center" VerticalAlignment="Center" Width="200" Height="100" Background="#3d3d3d" BorderBrush="Gainsboro" BorderThickness="2" Visibility="Hidden">
-            <StackPanel Style="{StaticResource LoginPanel}" >
-                <TextBlock Text="Вы не сохранили изменения! (F1)" Style="{StaticResource error_text}"/>
-                <Button Name ="ErrorButton" Click="ErrorButton_Click" Content="Ок" Style="{StaticResource error_button}"/>
-                
-            </StackPanel>
-        </Border>
-        
     </Grid>
 
 </Window>

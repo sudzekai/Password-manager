@@ -21,11 +21,11 @@ namespace Password_manager
 
             string path = @"password.txt";
             if (!File.Exists(path))
-                File.WriteAllText("password.txt", "");
+                File.WriteAllText(path, "");
 
             path = @"Passwords.txt";
             if (!File.Exists(path))
-                File.WriteAllText("Passwords.txt", "");
+                File.WriteAllText(path, "");
 
             string passwordpath = @"password.txt";
             if (!File.Exists(passwordpath))
@@ -34,7 +34,7 @@ namespace Password_manager
             }
             if (File.Exists(passwordpath))
             {
-                if (File.ReadAllText(passwordpath) == null || File.ReadAllText(passwordpath)=="")
+                if (File.ReadAllText(passwordpath).Length == 0)
                 {
                     PasswordScreen.Visibility = Visibility.Visible;
                 }
@@ -67,6 +67,7 @@ namespace Password_manager
                 {
                     txt_Output();
                 }
+
             }
             else
             {
@@ -81,13 +82,11 @@ namespace Password_manager
             string path = @"Passwords.txt";
             Passwords_Block.Text = null;
             if (File.Exists(path))
-            {   
-                for (int i = 0; i < File.ReadAllText(path).Split('\n').Count(); i++)
-                Passwords_Block.Text += Text_decryptor(File.ReadAllText(path).Split('\n')[i])+"\n";
-            }
-            else
             {
-                File.WriteAllText(path, "");
+                for (int i = 0; i < File.ReadAllText(path).Split('\n').Count(); i++)
+                {
+                    Passwords_Block.Text += Text_decryptor(File.ReadAllText(path).Split('\n')[i]) + "\n";
+                }
             }
         }
 
@@ -184,33 +183,6 @@ namespace Password_manager
         // обновленный метод ввода информации
         private void Passwords_Block_KeyDown(object sender, KeyEventArgs e)
         {
-            string path = @"Passwords.txt";
-            File.WriteAllText(path, "");
-
-            if (e.Key == Key.F1)
-            {
-                
-                if (File.Exists(path))
-                {
-                    string content = "";
-                    string text = Passwords_Block.Text;
-
-                    for (int i = 0; i < Passwords_Block.LineCount; i++) {
-                        File.AppendAllText(path, Text_encryptor(Passwords_Block.GetLineText(i))+"\n");
-                        
-                    }
-
-                    for (int i = 0; i < File.ReadLines(path).Count(); i++)
-                    {
-                        content += Text_decryptor(File.ReadAllText(path).Split('\n')[i]) + "\n";
-
-                    }
-
-                    Passwords_Block.Text = content;
-                }
-
-            }
-
             if (e.Key == Key.F2)
             {
                 string password = "";
@@ -221,30 +193,23 @@ namespace Password_manager
                     password += arr[x.Next(0, arr.Count())];
                     i++;
                 }
-
-                    
-
                 Passwords_Block.Text += password;
             }
+            File.AppendAllText("Passwords.txt", Passwords_Block.Text);
         }
 
         // проверка на наличие изменений
-
-        private void ErrorButton_Click(object sender, RoutedEventArgs e)
-        {
-            Error.Visibility = Visibility.Hidden;
-        }
-
         private void Window_Closing_1(object sender, CancelEventArgs e)
         {
-
+            
             string path = @"Passwords.txt";
+            File.WriteAllText(path, "");
             if (File.Exists(path))
             {
-                if (File.ReadAllText(path) == null || File.ReadAllText(path).Length == 0 || File.ReadAllText(path) == "")
+
+                for (int i = 0; i < Passwords_Block.LineCount; i++)
                 {
-                    e.Cancel = true;
-                    Error.Visibility = Visibility.Visible;
+                    File.AppendAllText(path, Text_encryptor(Passwords_Block.GetLineText(i)) + "\n");
                 }
             }
         }
